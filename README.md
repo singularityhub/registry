@@ -142,7 +142,19 @@ print(manifest.json())
 ## Step 2: Download Layers
 
 The layers are in the manifest "layers" key, so we just need to download
-one to the filesystem.
+one to the filesystem. Let's write a function to stream it to the filesystem:
+
+```python
+def stream_file(url, download_to):
+    response = requests.head(url, allow_redirects=True)
+    print("Image is hosted at %s" % response.url)
+    response = requests.get(response.url, stream=True)
+    with open(download_to, 'wb') as filey:
+        for chunk in response.iter_content(chunk_size=1024): 
+            if chunk: 
+                filey.write(chunk)
+    return download_to
+```
 
 ```python
 layers = manifest.json()['layers']
@@ -154,6 +166,6 @@ layers = manifest.json()['layers']
 for layer in layers:
     digest = layer['digest']
     layer_url = "%s/%s/blobs/%s" %(registry, namespace, digest)
-
+    download_to = stream_file(layer_url, 'mycontainer.simg')    
 ```
 
