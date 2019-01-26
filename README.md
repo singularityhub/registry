@@ -110,3 +110,50 @@ $ mkdir -p vanessa/greeting/blobs/a1025471b564766d08bdf2cb062c795c
 ```
 
 And the folder within (index.html) redirecting to the true url.
+
+
+## Step 1: Get the Manifest
+
+For demonstration I'll present this in Python. First, we get the image manifest.
+
+```python
+import requests
+
+registry = "https://singularityhub.github.io/container-storage"
+namespace = "vanessa/greeting"
+tag = "latest"
+
+manifest_url = "%s/%s/manifests/%s" %(registry, namespace, tag)
+manifest = requests.get(manifest_url)
+
+print(manifest.json())
+
+{'config': {'digest': 'sha256:8c7ad11d488a8dd933239b9543a81dbe226416e96dc2f441d3bd038d664c1c92',
+  'mediaType': 'application/vnd.docker.container.image.v1+json',
+  'size': 5539},
+ 'layers': [{'digest': 'md5:a1025471b564766d08bdf2cb062c795c',
+   'mediaType': 'application/vnd.docker.image.rootfs.diff.tar.gzip',
+   'size': 35300}],
+ 'mediaType': 'application/vnd.docker.distribution.manifest.v2+json',
+ 'schemaVersion': 2}
+```
+
+
+## Step 2: Download Layers
+
+The layers are in the manifest "layers" key, so we just need to download
+one to the filesystem.
+
+```python
+layers = manifest.json()['layers']
+
+# [{'digest': 'md5:a1025471b564766d08bdf2cb062c795c',
+#  'mediaType': 'application/vnd.docker.image.rootfs.diff.tar.gzip',
+#  'size': 35300}]
+
+for layer in layers:
+    digest = layer['digest']
+    layer_url = "%s/%s/blobs/%s" %(registry, namespace, digest)
+
+```
+
