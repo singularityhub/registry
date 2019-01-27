@@ -2,10 +2,27 @@
 
 Here I want to explore how we can generate a static registry for some kind
 of container (a binary or set of layers) using Github Pages and some storage.
+
+# Why do we need a static registry?
+
+It's not always affordable to host an entire registry server, meaning somewhere
+to run a Docker Registry that hosts an API plus blobs. It's much more realistic
+today (or desired) to want to have some API to serve metadata (and there is no reason
+this couldn't be statically hosted) and then a storage of choice such as S3, 
+Google Storage, etc. This would make all kinds of build and deploy pipelines possible,
+sort of like a "Choose your own adventure" for registries. For example:
+
+ 1. Maintain registry API statically on Github pages
+ 2. Build, check, update containers with Github Actions, TravisCI, CircleCI, or other continuous integration service
+ 3. On successful CI (tests pass hooray!) update record in registry (static content) and push to storage.
+
+
+# Proof of Concept for a Static Registry
+
 For this task, we will do the following:
 
  1. Manifests will be stored in Github Pages.
- 2. Containers / blobs / artifacts will be in Google Storage
+ 2. Container binaries will be in Google Storage
 
 For this to work, we map the following OCI conventions to Github Pages:
 
@@ -71,16 +88,10 @@ render correctly on Github pages.
 ## Blobs
 
 This is the first issue - the blobs are intended to be served by the same
-base url (of the registry) based on the shasum. What if we just created
-redirect download links instead? So let's say our first blob is the entire
-container, in storage, named by a hash. The url would be:
-
-```bash
-https://singularityhub.github.io/container-storage/vanessa/greeting/blobs/<digest>
-```
-
-Let's try this out! I'm going to walk through an example next using Google Cloud
-storage (and containers that already exist there).
+base url (of the registry) based on the shasum. My first thought was to create
+redirect download links, but realizing there is a [urls](https://github.com/opencontainers/image-spec/blob/master/descriptor.md#registered-algorithms) attribute it would
+be more direct to use this instead. I'm surprised this attribute isn't used more often,
+and annotations too! I could put some great metadata in there...
 
 # Example: Singularity Images
 
@@ -191,3 +202,9 @@ There are a couple of things to discuss here:
  - The content type for Singularity I don't think exists. Can it exist and require a single binary (via a url) and then just be validated using a digest?
  - What goes in the config section then?
 
+
+# Next Steps
+
+ 1. I will create GitHub Actions to interact with storage, and build.
+ 2. I'll create a front end interface for the Github Pages registry [see this issue](https://github.com/singularityhub/container-storage/issues/1)
+ 3. I'll connect the two so that there is a workflow to update the GitHub repository, and it will build and deploy a new container to storage and the API.
