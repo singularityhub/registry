@@ -92,24 +92,13 @@ have a manifest layer like:
         {
             "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
             "size": 2065537,
-            "digest": "md5:a1025471b564766d08bdf2cb062c795c"
+            "digest": "md5:a1025471b564766d08bdf2cb062c795c",
+            "urls": ["https://storage.googleapis.com/singularityhub/singularityhub/github.com/vsoch/singularity-images/130504089d5b2b44e2788992d0de75b625da6796/a1025471b564766d08bdf2cb062c795c/a1025471b564766d08bdf2cb062c795c.simg"]
+
         },
 ```
 
-With an address like:
-
-```
-https://singularityhub.github.io/container-storage/vanessa/greeting/blobs/a1025471b564766d08bdf2cb062c795c
-```
-
-
-Meaning a folder in this repository:
-
-```bash
-$ mkdir -p vanessa/greeting/blobs/a1025471b564766d08bdf2cb062c795c
-```
-
-And the folder within (index.html) redirecting to the true url.
+While the [md5 is not registered](https://github.com/opencontainers/image-spec/blob/master/descriptor.md#registered-algorithms) and thus a valid type, I'm using it just for this example.
 
 
 ## Step 1: Get the Manifest
@@ -137,7 +126,6 @@ print(manifest.json())
  'mediaType': 'application/vnd.docker.distribution.manifest.v2+json',
  'schemaVersion': 2}
 ```
-
 
 ## Step 2: Download Layers
 
