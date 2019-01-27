@@ -94,6 +94,13 @@ Let's (for now) create this manually (this would be done programatically)
 mkdir -p vanessa/greeting/manifests/latest
 ```
 
+In this model we lose "request this version of a manifest" from a repository - the
+most that might be done is to provide different versions on different branches of
+the repository.
+
+How would this work? We would want to return json, but we also need the URL to
+render correctly on Github pages.
+
 ## Tags
  
 It follows that tags are simply the named folders listed under the manifests folder!
@@ -111,21 +118,27 @@ add a template to do this too.
 mkdir -p vanessa/greeting/tags
 ```
 
+with an index.html in that folder that has the listing of tags:
 
-In this model we lose "request this version of a manifest" from a repository - the
-most that might be done is to provide different versions on different branches of
-the repository.
+```html
+{
+  "name": "vanessa/greeting",
+  "tags": [
+    "latest"
+  ]
+}
+```
 
-How would this work? We would want to return json, but we also need the URL to
-render correctly on Github pages.
+This would also be updated with any changes to the repository. 
 
 ## Blobs
 
 This is the first issue - the blobs are intended to be served by the same
 base url (of the registry) based on the shasum. My first thought was to create
 redirect download links, but realizing there is a [urls](https://github.com/opencontainers/image-spec/blob/master/descriptor.md#registered-algorithms) attribute it would
-be more direct to use this instead. I'm surprised this attribute isn't used more often,
-and annotations too! I could put some great metadata in there...
+be more direct to use this instead. I don't want to store any kind of
+a blob here, I want to push this responsibility one level down to the 
+storage. The manifest goes directly to the content to download.
 
 # Example: Singularity Images
 
