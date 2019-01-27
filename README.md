@@ -24,7 +24,20 @@ For this task, we will do the following:
  1. Manifests will be stored in Github Pages.
  2. Container binaries will be in Google Storage
 
-For this to work, we map the following OCI conventions to Github Pages:
+Looking at the [distribution spec](https://github.com/opencontainers/distribution-spec/blob/master/spec.md#detail) it seems like the primary endpoints for a registry are to serve the
+tags, (optionally) an exposed catalog, and then blobs. I want to argue that we should
+remove the blobs from the registry and have them pointed to (with some method, urls?)
+from the manifests. This means that the registry itself serves to:
+
+  - organize the namespace
+  - provide an API an interface to explore it
+  - for each entry (container) provide manifests, and tags
+
+And that's really it. This model is akin to a registry "slim" version, because 
+there is no advanced permissions model beyond what Github offers, and 
+updates are completely done via pull requests. In other words, it's a completely
+simplified and open source registry model. For this to work, we map the following 
+OCI conventions to Github Pages:
 
 ## Registry
 
@@ -59,7 +72,6 @@ append other commands to look up types, etc.) corresponds to:
 docker://singularityhub.github.io/container-storage/vanessa/greeting
 ```
 
-But we need to expose different endpoints to make that work.
 
 ## Manifest
 
@@ -81,6 +93,28 @@ Let's (for now) create this manually (this would be done programatically)
 ```bash
 mkdir -p vanessa/greeting/manifests/latest
 ```
+
+## Tags
+ 
+It follows that tags are simply the named folders listed under the manifests folder!
+It would make sense for each new namespace to have a "permalink" rendered at:
+
+```
+https://singularityhub.github.io/container-storage/vanessa/greeting/tags
+```
+
+That would serve the listing of tags. This isn't hard to do, we simply can 
+add a template to do this too.
+
+
+```bash
+mkdir -p vanessa/greeting/tags
+```
+
+
+In this model we lose "request this version of a manifest" from a repository - the
+most that might be done is to provide different versions on different branches of
+the repository.
 
 How would this work? We would want to return json, but we also need the URL to
 render correctly on Github pages.
