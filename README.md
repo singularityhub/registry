@@ -201,6 +201,11 @@ There are a couple of things to discuss here:
 
  - The content type for Singularity I don't think exists. Can it exist and require a single binary (via a url) and then just be validated using a digest?
  - What goes in the config section then?
+ - The storage needs to have an organizational standard. Given being stored in a Github repository, to me the logical answer is:
+
+```
+<github.com>/<username>/<reponame>/<commit>/<hash>/ [container]
+```
 
 
 # Next Steps
