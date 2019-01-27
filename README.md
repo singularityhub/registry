@@ -113,30 +113,40 @@ namespace = "vanessa/greeting"
 tag = "latest"
 
 manifest_url = "%s/%s/manifests/%s" %(registry, namespace, tag)
-manifest = requests.get(manifest_url)
+manifest = requests.get(manifest_url).json()
 
-print(manifest.json())
-
-{'config': {'digest': 'sha256:8c7ad11d488a8dd933239b9543a81dbe226416e96dc2f441d3bd038d664c1c92',
-  'mediaType': 'application/vnd.docker.container.image.v1+json',
-  'size': 5539},
- 'layers': [{'digest': 'md5:a1025471b564766d08bdf2cb062c795c',
-   'mediaType': 'application/vnd.docker.image.rootfs.diff.tar.gzip',
-   'size': 35300}],
- 'mediaType': 'application/vnd.docker.distribution.manifest.v2+json',
- 'schemaVersion': 2}
+]: print(json.dumps(manifest, indent=4))
+{
+    "schemaVersion": 2,
+    "mediaType": "application/vnd.singularity.distribution.manifest.v2+json",
+    "config": {
+        "mediaType": "application/vnd.singularity.container.image.v1+json",
+        "size": 5539,
+        "digest": "sha256:8c7ad11d488a8dd933239b9543a81dbe226416e96dc2f441d3bd038d664c1c92"
+    },
+    "layers": [
+        {
+            "mediaType": "application/vnd.singularity.image.squashfs",
+            "size": 2065537,
+            "digest": "md5:a1025471b564766d08bdf2cb062c795c",
+            "urls": [
+                "https://storage.googleapis.com/singularityhub/singularityhub/github.com/vsoch/singularity-images/130504089d5b2b44e2788992d0de75b625da6796/a1025471b564766d08bdf2cb062c795c/a1025471b564766d08bdf2cb062c795c.simg"
+            ]
+        }
+    ]
+}
 ```
 
-## Step 2: Download Layers
+## Step 2: Download Image URLs
 
-The layers are in the manifest "layers" key, so we just need to download
-one to the filesystem. Let's write a function to stream it to the filesystem:
+This ignores the config and content type for now, and just downloads the image url.
+I would want to assume that the client knows that given a singularity squashfs,
+the correct thing to do is download the single binary. 
+Let's write a function to stream it to the filesystem:
 
 ```python
 def stream_file(url, download_to):
-    response = requests.head(url, allow_redirects=True)
-    print("Image is hosted at %s" % response.url)
-    response = requests.get(response.url, stream=True)
+    response = requests.get(url, stream=True)
     with open(download_to, 'wb') as filey:
         for chunk in response.iter_content(chunk_size=1024): 
             if chunk: 
@@ -145,15 +155,39 @@ def stream_file(url, download_to):
 ```
 
 ```python
-layers = manifest.json()['layers']
+layers = manifest['layers']
 
-# [{'digest': 'md5:a1025471b564766d08bdf2cb062c795c',
-#  'mediaType': 'application/vnd.docker.image.rootfs.diff.tar.gzip',
-#  'size': 35300}]
+# {'digest': 'md5:a1025471b564766d08bdf2cb062c795c',
+# 'mediaType': 'application/vnd.singularity.image.squashfs',
+# 'size': 2065537,
+# 'urls': ['https://storage.googleapis.com/singularityhub/singularityhub/github.com/vsoch/singularity-images/130504089d5b2b44e2788992d0de75b625da6796/a1025471b564766d08bdf2cb062c795c/a1025471b564766d08bdf2cb062c795c.simg']}
 
 for layer in layers:
-    digest = layer['digest']
-    layer_url = "%s/%s/blobs/%s" %(registry, namespace, digest)
-    download_to = stream_file(layer_url, 'mycontainer.simg')    
+    url = layer['urls'][0]
+    download_to = stream_file(url, 'mycontainer.simg')    
 ```
+
+## Step 3: Run the Container
+
+Does it work?
+
+```bash
+$ singularity run mycontainer.simg
+You say please, but all I see is pizza..
+```
+
+Yep!
+
+Here is the md5sum:
+
+
+```bash
+$ md5sum mycontainer.simg
+a1025471b564766d08bdf2cb062c795c  mycontainer.simg
+```
+
+There are a couple of things to discuss here:
+
+ - The content type for Singularity I don't think exists. Can it exist and require a single binary (via a url) and then just be validated using a digest?
+ - What goes in the config section then?
 
