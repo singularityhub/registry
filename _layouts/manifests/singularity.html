@@ -1,0 +1,19 @@
+{
+    "schemaVersion": 2,
+    "mediaType": "application/vnd.singularity.distribution.manifest.v2+json",
+    "config": {
+        "mediaType": "application/vnd.singularity.container.image.v1+json",
+        "size": {{ page.size }},
+        "digest": "{{ page.digest }}"
+    },
+    "layers": [
+        {% for layer in page.layers %}{
+            "mediaType": "application/vnd.singularity.image.squashfs",
+            "size": {{ layer.size }},
+            "digest": "{{ layer.digest }}",
+            "urls": ["{{ layer.url }}"]
+        }{% if forloop.last %}{% else %},{% endif %}
+        {% endfor %}
+
+    ]
+}

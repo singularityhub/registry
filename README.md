@@ -19,6 +19,8 @@ sort of like a "Choose your own adventure" for registries. For example:
 
 # Proof of Concept for a Static Registry
 
+## 1. API and Organization
+
 For this task, we will do the following:
 
  1. Manifests will be stored in Github Pages.
@@ -39,14 +41,14 @@ updates are completely done via pull requests. In other words, it's a completely
 simplified and open source registry model. For this to work, we map the following 
 OCI conventions to Github Pages:
 
-## Registry
+### Registry
 
 Since the content will be served on Github pages (via the master branch)
 we can assert that the registry base address is the Github pages 
 address. This means for the repository "singularityhub/container-storage"
 we use the address "https://singularityhub.github.io/container-storage/.
 
-## Namespace
+### Namespace
 
 It follows then, that a container namespace are some number of subfolders at
 the base of the repository. For example, if we want to follow Docker Hub
@@ -73,7 +75,7 @@ docker://singularityhub.github.io/container-storage/vanessa/greeting
 ```
 
 
-## Manifest
+### Manifest
 
 The root for [image manifests](https://github.com/opencontainers/image-spec/blob/master/manifest.md) 
 might be found at:
@@ -101,7 +103,7 @@ the repository.
 How would this work? We would want to return json, but we also need the URL to
 render correctly on Github pages.
 
-## Tags
+### Tags
  
 It follows that tags are simply the named folders listed under the manifests folder!
 It would make sense for each new namespace to have a "permalink" rendered at:
@@ -131,7 +133,7 @@ with an index.html in that folder that has the listing of tags:
 
 This would also be updated with any changes to the repository. 
 
-## Blobs
+### Blobs
 
 This is the first issue - the blobs are intended to be served by the same
 base url (of the registry) based on the shasum. My first thought was to create
@@ -140,7 +142,7 @@ be more direct to use this instead. I don't want to store any kind of
 a blob here, I want to push this responsibility one level down to the 
 storage. The manifest goes directly to the content to download.
 
-# Example: Singularity Images
+### Example: Singularity Images
 
 [Here is a direct link](https://storage.googleapis.com/singularityhub/singularityhub/github.com/vsoch/singularity-images/130504089d5b2b44e2788992d0de75b625da6796/a1025471b564766d08bdf2cb062c795c/a1025471b564766d08bdf2cb062c795c.simg) to download a container. Let's say that the
 blob is the hash of the container, `a1025471b564766d08bdf2cb062c795c` so we need to
@@ -159,7 +161,7 @@ have a manifest layer like:
 While the [md5 is not registered](https://github.com/opencontainers/image-spec/blob/master/descriptor.md#registered-algorithms) and thus a valid type, I'm using it just for this example.
 
 
-## Step 1: Get the Manifest
+#### Step 1: Get the Manifest
 
 For demonstration I'll present this in Python. First, we get the image manifest.
 
@@ -173,7 +175,7 @@ tag = "latest"
 manifest_url = "%s/%s/manifests/%s" %(registry, namespace, tag)
 manifest = requests.get(manifest_url).json()
 
-]: print(json.dumps(manifest, indent=4))
+print(json.dumps(manifest, indent=4))
 {
     "schemaVersion": 2,
     "mediaType": "application/vnd.singularity.distribution.manifest.v2+json",
@@ -195,7 +197,7 @@ manifest = requests.get(manifest_url).json()
 }
 ```
 
-## Step 2: Download Image URLs
+#### Step 2: Download Image URLs
 
 This ignores the config and content type for now, and just downloads the image url.
 I would want to assume that the client knows that given a singularity squashfs,
@@ -225,7 +227,7 @@ for layer in layers:
     download_to = stream_file(url, 'mycontainer.simg')    
 ```
 
-## Step 3: Run the Container
+#### Step 3: Run the Container
 
 Does it work?
 
@@ -254,6 +256,27 @@ There are a couple of things to discuss here:
 <github.com>/<username>/<reponame>/<commit>/<hash>/ [container]
 ```
 
+
+## 2. Web Interface
+
+The web interface, akin to the API, is rendered on Github pages according to
+the organization of the files. Let's again look at our collection folder:
+
+```
+├── vanessa
+│   └── greeting
+│       ├── manifests
+│       │   └── latest
+│       │       ├── README.md
+│       │       └── Singularity
+│       ├── README.md
+│       └── tags
+│           └── index.md
+```
+
+The collection "vanessa/greeting" has all of its containers defined under the manifests folder.
+This means that if I want to add a new container,  I create the tag for it as a folder under "manifests."
+If I want
 
 # Next Steps
 

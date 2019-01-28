@@ -1,0 +1,216 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+        <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+        <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+        <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>{{ site.title }}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="{{ site.description }}" />
+        <meta name="keywords" content="{{ site.keywords }}" />
+        <meta name="author" content="{{ site.maintainer }}" />
+
+        <link rel="icon" type="image/ico" href="{{ site.baseurl }}/assets/img/favicon.ico"/>
+
+        <!-- Facebook and Twitter integration -->
+        <meta property="og:title" content="{{ site.title }}"/>
+        <meta property="og:image" content=""/>
+        <meta property="og:url" content=""/>
+        <meta property="og:site_name" content="{{ site.title }}"/>
+        <meta property="og:description" content="{{ site.description }}"/>
+        {% if site.twitter %}<meta name="twitter:title" content="{{ site.twitter }}" />
+        <meta name="twitter:image" content="" />
+        <meta name="twitter:url" content="https://www.twitter.com/{{ site.twitter }}" />
+        <meta name="twitter:card" content="" />{% endif %}
+
+        <!-- Google Webfonts -->
+        <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,100,500' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,300,100,500' rel='stylesheet' type='text/css'>
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+       
+        <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/material-table.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/style.css">
+        <script src="{{ site.baseurl }}/assets/js/modernizr-2.6.2.min.js"></script>
+        <!-- FOR IE9 below -->
+        <!--[if lt IE 9]>
+        <script src="{{ site.baseurl }}/assets/js/respond.min.js"></script>
+        <![endif]-->
+
+    </head>
+
+    
+    <body>
+
+    <header>
+
+        <!-- Variable Assignments -->
+        {% assign collection_name = page.dir | remove_first: '/' | append: '@' | remove: '/@' %}
+        {% assign repository_name = site.repository | split: '/'  %}
+        {% assign manifests = collection_name | append: "/manifests" %}
+        {% assign tags = "" %}{% for item in site.pages %}{% if item.path contains manifests %}{% assign tag_name = item.path | remove_first: collection_name | remove_first: "/manifests/" | remove: "/README.md" %}{% assign tags = tags | append: tag_name | append: "," %}{% endif %}{% endfor %}{% assign tags = tags | append: "-@" | remove: ",-@" %}{% assign taglist = tags | split: ", " %}
+
+        <nav class="navbar navbar-toggleable-md navbar-default" role="navigation">
+
+        <a class="navbar-brand" 
+           href="/"
+           style="font-size:16px">{{ repository_name[0] }}/<span style="color:#e32929">{{ repository_name[1] }}</span></a>
+        
+          <ul class="nav navbar-nav">
+
+            <!-- Containers -->
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                Collections
+                <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ site.github.owner_url }}">All Collections</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="{{ site.github.repository_url }}/issues/new" target="_blank">Get Help</a></li>
+                </ul>
+            </li>
+
+            <!-- Documentation -->
+            <li><a href="#">About</a></li>
+          </ul>
+
+          <!-- User Options -->
+          <ul class="nav navbar-nav navbar-right" style="margin-right:20px">            
+            <li><a href="https://github.com/search?q=org%3A{{ site.github.owner_name }}"><i class="fa fa-search"></i></a></li>
+          </ul>
+
+    </nav>
+
+    </header>
+        
+    <div class="container-fluid" style="margin:30px">
+    
+
+<div class="row" style="margin-top:30px">
+
+    <div class="col-md-4">
+        <h3 class="title">{{ collection_name }}</h3>
+        <small>{{ page.description }}</small>
+        
+    </div>
+    <div class="col-md-6">
+
+        <div class="card">
+            <div class="header">
+           
+            </div>
+       </div>   
+    </div>
+    <div class="col-md-2">
+                       <a href="{{ site.github.repository_url }}" 
+                          target="_blank"><i style="padding-left:25px; margin-right:50px; float:right; font-size:30px" class="fa fa-github"></i></a>                          
+    </div>
+</div>
+
+<div class="row" style="margin-top:40px">
+
+    <!-- Container collection meta -->
+    <div class="col-md-12">
+        <div class="card">                 
+            <button class="btn btn-default btn-sm" id="details_button">Details</button>   
+            </div>
+    </div>
+ </div>
+
+{% if content.size > 0 %}<div class="row" style="margin-top:50px">  
+    <div class="col-md-12">
+     <div style="display:none" id="collection_details">{{ content }}</div>
+    </div>
+</div>{% endif %}
+
+<!-- Containers! -->
+<div class="row">        
+    <div class="col-md-12">
+        <div class="card material-table mdl-data-table--selectable">
+            <div class="table-header" style="width:100%">
+                <span class="table-title">Builds</span> 
+                <span style="margin-left:10px; cursor: help;"
+                      title="Builds happen on Continuous Integration deployment">{{ taglist.size }}<span>
+            </div>
+                   <table id="datatable" style="width:100%" class="datatable">
+                       <thead>
+                           <tr>                    
+                               <th>uri</th>
+                               <th>Recipe</th>
+                               <th>Status</th>
+                               <th>Tag</th>
+                               <th>Size</th>
+                           </tr>
+                       </thead>
+
+                           <tbody>
+                           
+                           {% for tag in taglist %}<tr>
+
+                               {% comment %}
+                               Each tag has an associated README.md with metadata about layers, etc., so we find it here. At
+                               the end of this loop below, the page is assigned to the tag_page variable.
+                               {% endcomment %}
+                               {% assign readme_link = manifests | append: "/" | append: tag | append: "/README.md" %}
+                               {% for item in site.pages %}{% if item.path contains readme_link %}{% assign tag_page = item %}{% endif %}{% endfor %}
+                               <td>
+                                   <a href="{{ site.github.repository_url }}/tree/master/{{ collection_name }}/manifests/{{ tag }}">
+                                      {{ collection_name }}:{{ tag }}  
+                                   </a>
+                               </td>
+                               <td><a title="{{ tag }}" href="{{ site.github.repository_url }}/tree/master/{{ collection_name }}/manifests/{{ tag }}/Singularity">Singularity Recipe</a></td>
+                               <td><a href="{{ tag_page.layers[0].url }}">
+                                   <button class="btn btn-success btn-sm" style="margin-top:20px">DOWNLOAD</button></a></td>
+                               <td>{{ tag }}</td>
+                               <td>{{ tag_page.size }} KB</td>
+                           </tr>{% endfor %}
+                       </tbody>
+                   </table>
+         </div>
+     </div>
+</div>
+    
+<div class="row">
+    <div class="col-md-12" 
+         style="padding-top:20px;float:right">
+    <a class="social-icon" 
+       href="https://twitter.com/intent/tweet?text=Singularity Container {{ collection_name }}&url={{ page.url }}&via=SingularityApp&related=SingularityApp" 
+       rel="nofollow" 
+       target="_blank" 
+       title="Share on Twitter">
+       <i class="fa fa-2x fa-twitter"></i></a>
+    <a class="social-icon"  
+       href="https://facebook.com/sharer.php?u={{ page.url }}" 
+       rel="nofollow" 
+       target="_blank" 
+       title="Share on Facebook">
+       <i class="fa fa-2x fa-facebook"></i></a>
+       <a class="social-icon"  href="http://www.reddit.com/submit?url={{ page.url }}&title=Singularity Container {{ collection_name }}" rel="nofollow" target="_blank" title="Share on Reddit"><i class="fa fa-2x fa-reddit"></i></a>
+    </div>
+</div>
+    </div>
+    <script src="{{ site.baseurl }}/assets/js/jquery.min.js"></script>
+    <script src="{{ site.baseurl }}/assets/js/bootstrap.min.js"></script>
+    <script src="{{ site.baseurl }}/assets/js/paper-dashboard.js"></script>
+    <script type="text/javascript" src="{{ site.baseurl }}/assets/js/bootstrap-table.js"></script>
+    <script src="{{ site.baseurl }}/assets/js/jquery.dataTables.min.js"></script>
+    <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+    <script src="{{ site.baseurl }}/assets/js/materialize.min.js"></script>
+    <script src="{{ site.baseurl }}/assets/js/material.datatables.js"></script>
+
+<script>
+$(document).ready(function(){
+
+    $('.paginate_button').remove()
+    $('#details_button').click(function(){
+        $('#collection_details').toggle();
+    })
+
+});
+
+</script>
+</body>    
+</html>

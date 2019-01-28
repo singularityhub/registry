@@ -1,0 +1,33 @@
+
+title:        Container Storage
+
+# Urls
+baseurl:      "/container-storage"
+repository:   "singularityhub/container-storage"
+repo:         "https://www.github.com/singularityhub/container-storage"
+
+# People and Social
+maintainer: "@vsoch"
+twitter: vsoch
+
+# Registry Metadata
+keywords: "singularity, containers"
+description: "singularity container and workflow management"
+
+# Defaults
+defaults:
+  -
+    scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+  -
+    scope:
+      path: "" 
+      type: "pages"
+    values:
+      permalink: "/:path/"
+
+#Others
+markdown: kramdown

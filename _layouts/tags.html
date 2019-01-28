@@ -1,0 +1,6 @@
+{% assign collection_name = page.dir | remove_first: '/' | append: '@' | remove: '/@' | remove: '/tags' %}{% assign manifests = collection_name | append: "/manifests" %}{
+  "name": "{{ collection_name }}", {% assign tags = "" %}{% for item in site.pages %}{% if item.path contains manifests %}{% assign tag_name = item.path | remove_first: collection_name | remove_first: "/manifests/" | remove: "/README.md" %}{% assign tag_name = '"' | append: tag_name | append: '"' %}{% assign tags = tags | append: tag_name | append: "," %}{% endif %}{% endfor %}
+{% assign tags = tags | append: "-@" | remove: ",-@" %}  "tags": [
+    {{ tags }}
+   ]
+}
