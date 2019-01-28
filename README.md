@@ -35,3 +35,8 @@ Following the links below to read the documentation on the repository wiki to le
 
 Please [open an issue](https://www.github.com/singularityhub/container-storage/) if you
 have any questions, preguntas, dilemas, asuntos... 
+
+## License
+
+This code is licensed under the Affero GPL, version 3.0 or later [LICENSE](LICENSE). 
+The power of open source compels you!!
