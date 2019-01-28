@@ -51,7 +51,7 @@
         {% assign repository_name = site.repository | split: '/'  %}
 
         <a class="navbar-brand" 
-           href="/"
+           href="{{ site.baseurl }}/"
            style="font-size:16px">{{ repository_name[0] }}/<span style="color:#e32929">{{ repository_name[1] }}</span></a>
         
           <ul class="nav navbar-nav">
@@ -62,7 +62,8 @@
                 Collections
                 <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    <li><a href="{{ site.github.owner_url }}">All Collections</a></li>
+                    <li><a href="{{ site.baseurl }}">Collections</a></li>
+                    <li><a href="{{ site.github.owner_url }}">Organization on Github</a></li>
                     <li role="separator" class="divider"></li>
                     <li><a href="{{ site.github.repository_url }}/issues/new" target="_blank">Get Help</a></li>
                 </ul>
