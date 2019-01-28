@@ -1,3 +1,7 @@
+---
+layout: home
+---
+
 # Container Storage
 
 Here I want to explore how we can generate a static registry for some kind

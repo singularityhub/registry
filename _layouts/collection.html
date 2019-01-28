@@ -1,93 +1,12 @@
-<!DOCTYPE HTML>
-<html lang="en">
-    <head>
-        <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-        <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-        <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-        <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>{{ site.title }}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="{{ site.description }}" />
-        <meta name="keywords" content="{{ site.keywords }}" />
-        <meta name="author" content="{{ site.maintainer }}" />
+---
+layout: default
+---
 
-        <link rel="icon" type="image/ico" href="{{ site.baseurl }}/assets/img/favicon.ico"/>
+<!-- Variable Assignments -->
+{% assign collection_name = page.dir | remove_first: '/' | append: '@' | remove: '/@' %}
+{% assign manifests = collection_name | append: "/manifests" %}
+{% assign tags = "" %}{% for item in site.pages %}{% if item.path contains manifests %}{% assign tag_name = item.path | remove_first: collection_name | remove_first: "/manifests/" | remove: "/README.md" %}{% assign tags = tags | append: tag_name | append: "," %}{% endif %}{% endfor %}{% assign tags = tags | append: "-@" | remove: ",-@" %}{% assign taglist = tags | split: ", " %}
 
-        <!-- Facebook and Twitter integration -->
-        <meta property="og:title" content="{{ site.title }}"/>
-        <meta property="og:image" content=""/>
-        <meta property="og:url" content=""/>
-        <meta property="og:site_name" content="{{ site.title }}"/>
-        <meta property="og:description" content="{{ site.description }}"/>
-        {% if site.twitter %}<meta name="twitter:title" content="{{ site.twitter }}" />
-        <meta name="twitter:image" content="" />
-        <meta name="twitter:url" content="https://www.twitter.com/{{ site.twitter }}" />
-        <meta name="twitter:card" content="" />{% endif %}
-
-        <!-- Google Webfonts -->
-        <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,100,500' rel='stylesheet' type='text/css'>
-        <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,300,100,500' rel='stylesheet' type='text/css'>
-        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
-       
-        <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/material-table.css">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-        <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/style.css">
-        <script src="{{ site.baseurl }}/assets/js/modernizr-2.6.2.min.js"></script>
-        <!-- FOR IE9 below -->
-        <!--[if lt IE 9]>
-        <script src="{{ site.baseurl }}/assets/js/respond.min.js"></script>
-        <![endif]-->
-
-    </head>
-
-    
-    <body>
-
-    <header>
-
-        <!-- Variable Assignments -->
-        {% assign collection_name = page.dir | remove_first: '/' | append: '@' | remove: '/@' %}
-        {% assign repository_name = site.repository | split: '/'  %}
-        {% assign manifests = collection_name | append: "/manifests" %}
-        {% assign tags = "" %}{% for item in site.pages %}{% if item.path contains manifests %}{% assign tag_name = item.path | remove_first: collection_name | remove_first: "/manifests/" | remove: "/README.md" %}{% assign tags = tags | append: tag_name | append: "," %}{% endif %}{% endfor %}{% assign tags = tags | append: "-@" | remove: ",-@" %}{% assign taglist = tags | split: ", " %}
-
-        <nav class="navbar navbar-toggleable-md navbar-default" role="navigation">
-
-        <a class="navbar-brand" 
-           href="/"
-           style="font-size:16px">{{ repository_name[0] }}/<span style="color:#e32929">{{ repository_name[1] }}</span></a>
-        
-          <ul class="nav navbar-nav">
-
-            <!-- Containers -->
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                Collections
-                <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                    <li><a href="{{ site.github.owner_url }}">All Collections</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="{{ site.github.repository_url }}/issues/new" target="_blank">Get Help</a></li>
-                </ul>
-            </li>
-
-            <!-- Documentation -->
-            <li><a href="#">About</a></li>
-          </ul>
-
-          <!-- User Options -->
-          <ul class="nav navbar-nav navbar-right" style="margin-right:20px">            
-            <li><a href="https://github.com/search?q=org%3A{{ site.github.owner_name }}"><i class="fa fa-search"></i></a></li>
-          </ul>
-
-    </nav>
-
-    </header>
-        
-    <div class="container-fluid" style="margin:30px">
-    
 
 <div class="row" style="margin-top:30px">
 
@@ -191,15 +110,6 @@
        <a class="social-icon"  href="http://www.reddit.com/submit?url={{ page.url }}&title=Singularity Container {{ collection_name }}" rel="nofollow" target="_blank" title="Share on Reddit"><i class="fa fa-2x fa-reddit"></i></a>
     </div>
 </div>
-    </div>
-    <script src="{{ site.baseurl }}/assets/js/jquery.min.js"></script>
-    <script src="{{ site.baseurl }}/assets/js/bootstrap.min.js"></script>
-    <script src="{{ site.baseurl }}/assets/js/paper-dashboard.js"></script>
-    <script type="text/javascript" src="{{ site.baseurl }}/assets/js/bootstrap-table.js"></script>
-    <script src="{{ site.baseurl }}/assets/js/jquery.dataTables.min.js"></script>
-    <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
-    <script src="{{ site.baseurl }}/assets/js/materialize.min.js"></script>
-    <script src="{{ site.baseurl }}/assets/js/material.datatables.js"></script>
 
 <script>
 $(document).ready(function(){
@@ -210,7 +120,4 @@ $(document).ready(function(){
     })
 
 });
-
 </script>
-</body>    
-</html>
