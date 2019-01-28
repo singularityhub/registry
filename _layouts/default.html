@@ -93,6 +93,20 @@
     <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
     <script src="{{ site.baseurl }}/assets/js/materialize.min.js"></script>
     <script src="{{ site.baseurl }}/assets/js/material.datatables.js"></script>
+    
+<script>
+$(document).ready(function(){
+
+    $('.paginate_button').remove()
+    $('#details_button').click(function(){
+        $('#collection_details').toggle();
+    })
+    $('#usage_button').click(function(){
+        $('#usage_details').toggle();
+    })
+
+});
+</script>
 
 </body>    
 </html>

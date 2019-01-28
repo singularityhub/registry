@@ -33,9 +33,10 @@ layout: default
 
     <!-- Container collection meta -->
     <div class="col-md-12">
-        <div class="card">                 
+        <div class="card">             
+            <button class="btn btn-default btn-sm" id="usage_button">Usage</button>   
             <button class="btn btn-default btn-sm" id="details_button">Details</button>   
-            </div>
+        </div>
     </div>
  </div>
 
@@ -44,6 +45,17 @@ layout: default
      <div style="display:none" id="collection_details">{{ content }}</div>
     </div>
 </div>{% endif %}
+
+<div class="row" style="margin-top:20px;display:none" id="usage_details">  
+    <div class="col-md-4">
+          <h4>Tags</h4>
+           <pre><code>curl {{ site.github.url }}/{{ site.baseurl }}/{{ collection_name }}/tags/</code></pre>
+    </div>
+    <div class="col-md-4">
+          <h4>Manifest</h4>
+          <pre><code>curl {{ site.github.url }}/{{ site.baseurl }}/{{ collection_name }}/manifests/latest/</code></pre>
+    </div>
+</div>
 
 <!-- Containers! -->
 <div class="row">        
@@ -110,14 +122,3 @@ layout: default
        <a class="social-icon"  href="http://www.reddit.com/submit?url={{ page.url }}&title=Singularity Container {{ collection_name }}" rel="nofollow" target="_blank" title="Share on Reddit"><i class="fa fa-2x fa-reddit"></i></a>
     </div>
 </div>
-
-<script>
-$(document).ready(function(){
-
-    $('.paginate_button').remove()
-    $('#details_button').click(function(){
-        $('#collection_details').toggle();
-    })
-
-});
-</script>
