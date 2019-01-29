@@ -34,16 +34,44 @@ jobs:
           name: build container
           command: |
             cd ~/repo
-            /bin/bash ~/repo/.circleci/build.sh Singularity
-            mkdir -p build && cp *.simg build
-            mkdir -p build && cp Singularity* build
+            mkdir -p build
+            # 0. Keep lists of tags, hashes, and storage paths
+            tags=""
+            digests=""
+            paths=""
+            # 1. Find changed files between branch and master
+            changed_recipes=$(git diff --name-only master | grep Singularity)
+            for recipe in $changed_recipes
+                do  
+                    echo "Found changed recipe $recipe"
+                    /bin/bash ~/repo/.circleci/build.sh $recipe
+                    # Rename image based on shasum
+                    container_name=`sha256sum ${recipe}.sif | awk '{ print $1 }'`
+                    container_dir=$(dirname ${recipe}.sif)
+                    container_tag=$(basename $container_dir)
+                    mv ${recipe}.sif ${container_dir}/${container_name}.sif
 
+                    # Create artifact storage that mirrors registry organization
+                    outdir=build"${container_dir/${HOME}\/repo/}"
+                    outdir="${outdir/manifests\//}"  # vanessa/greeting/latest
+                    mkdir -p $outdir
+
+                    echo "Successfully built ${recipe}"
+                    echo "Saving to $outdir"
+                    echo "   sha256sum -> $container_name"
+                    echo "   tag       -> $container_tag"
+ 
+                    mv "${container_dir}/${container_name}.sif" $outdir
+                    tags="${tags}${container_tag} "
+                    digests="${digests}sha256:${container_name} "
+                    paths="$paths${outdir}/${container_name}.sif"
+                    
+                done
+             
       # build the container!
       # You can add any other sregistry push commands here, and specify a client
       # (and make sure your define the encrypted environment credentials in circle ci
       # to push to your storage locations of choice
-
-      # TODO here we would need to push to storage (and get back a URL)
 
       # Examples with upload to storage clients defined by sregistry
       # https://singularityhub.github.io/sregistry-cli/clients
