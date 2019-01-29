@@ -32,7 +32,7 @@ ls
 if [ ! -f "go/api/README" ]
     then
         wget https://dl.google.com/go/go${GO_VERSION}.src.tar.gz && \
-        tar -C /usr/local -xzf go${GO_VERSION}.src.tar.gz
+        tar -C /usr/local --keep-old-files -xzf go${GO_VERSION}.src.tar.gz
 fi
 
 export PATH=$PATH:/usr/local/go/bin && \
