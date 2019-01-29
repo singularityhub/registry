@@ -1,10 +1,10 @@
 
-title:        Container Storage
+title:        Static Registry
 
 # Urls
-baseurl:      "/container-storage"
-repository:   "singularityhub/container-storage"
-repo:         "https://www.github.com/singularityhub/container-storage"
+baseurl:      "/registry"
+repository:   "singularityhub/registry"
+repo:         "https://www.github.com/singularityhub/registry"
 
 # People and Social
 maintainer: "@vsoch"
