@@ -2,7 +2,7 @@
 layout: home
 ---
 
-# Static Registry
+# A Static Container Registry
 
 Welcome to registry, a static container registry! Here I am exploring
 how we can generate a static registry for some kind of container (a binary or set of layers) 
