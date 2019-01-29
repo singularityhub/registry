@@ -2,9 +2,9 @@
 layout: home
 ---
 
-# Container Storage
+# Static Registry
 
-Welcome to container-storage, a static container registry! Here I am exploring
+Welcome to registry, a static container registry! Here I am exploring
 how we can generate a static registry for some kind of container (a binary or set of layers) 
 using Github Pages and some storage.
 
@@ -26,14 +26,14 @@ sort of like a "Choose your own adventure" for registries. For example:
 
 Following the links below to read the documentation on the repository wiki to learn more.
 
- - [Documentation](https://github.com/singularityhub/container-storage/wiki) home on the respository wiki.
- - [Deploy!](https://github.com/singularityhub/container-storage/wiki/deploy-container-storage) your own container storage.
- - [Example API Interaction](https://github.com/singularityhub/container-storage/wiki/Example-API-Interaction)
- - [Technical Specification](https://github.com/singularityhub/container-storage/wiki/Technical-Specification) or specifically, the logic behind the files and folder organization here.
+ - [Documentation](https://github.com/singularityhub/registry/wiki) home on the respository wiki.
+ - [Deploy!](https://github.com/singularityhub/registry/wiki/deploy-registry) your own container storage.
+ - [Example API Interaction](https://github.com/singularityhub/registry/wiki/Example-API-Interaction)
+ - [Technical Specification](https://github.com/singularityhub/registry/wiki/Technical-Specification) or specifically, the logic behind the files and folder organization here.
 
 ## Support
 
-Please [open an issue](https://www.github.com/singularityhub/container-storage/) if you
+Please [open an issue](https://www.github.com/singularityhub/registry/) if you
 have any questions, preguntas, dilemas, asuntos... 
 
 ## License
