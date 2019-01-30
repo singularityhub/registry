@@ -4,6 +4,7 @@ From:ubuntu:16.04
 %post
 
     echo "The sun is shining, the weather is sweeeet..."
+    echo "Make you wanna move..."
 
 %runscript
 

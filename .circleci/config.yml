@@ -1,0 +1,138 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2
+jobs:
+  build:
+    machine: true
+    working_directory: ~/repo
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v5-dependencies
+
+      - run:
+          name: install dependencies
+          command: | 
+            ls $HOME
+            if [ ! -d "/home/circleci/conda" ]; then
+                wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+                /bin/bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/conda
+                export PATH=$HOME/conda/bin:$PATH
+                $HOME/conda/bin/pip install sregistry[all]
+            else
+                echo "Miniconda is already installed, continuing to build."
+            fi
+            chmod u+x ~/repo/.circleci/*.sh
+            /bin/bash ~/repo/.circleci/setup.sh
+
+      - save_cache:
+          paths:
+            - /home/circleci/conda
+          key: v5-dependencies
+        
+      - run:
+          name: Build Containers
+          command: |
+            cd ~/repo
+            mkdir -p build
+            # The repository ID is in the inspect / metadata
+            # <meta name="octolytics-dimension-repository_id" content="167740989" />
+            # repo_id=167740989
+            repo_id=$(curl https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} | jq --raw-output '.id')
+            echo "Repo ID is ${repo_id}"
+            artifacts="https://${CIRCLE_BUILD_NUM}-${repo_id}-gh.circle-artifacts.com"
+            # Here is a list of commits, compared to master
+            commits=$(git log --format=%H origin/master..origin/${CIRCLE_BRANCH})
+            changed=$(tempfile) 
+            for commit in $commits
+                do
+                    git diff --name-only master $commit >> ${changed}
+            done
+            changed_recipes=$(cat $changed | grep Singularity | sort | uniq)
+            # 1. Find changed files between branch and master
+            for recipe in ${changed_recipes}
+                do  
+                    echo "Found changed recipe $recipe"
+                    container_dir=$(dirname ${recipe}.sif)
+                    # If the user provided a build script, run it instead
+                    if [ -f "${container_dir}/build.sh" ]; then
+                        echo "Found ${container_dir}/build.sh"
+                        chmod u+x ${container_dir}/build.sh
+                        /bin/bash ${container_dir}/build.sh $recipe
+                    else
+                        /bin/bash ~/repo/.circleci/build.sh $recipe
+                    fi
+                    # Rename image based on shasum
+                    container_name=`sha256sum ${recipe}.sif | awk '{ print $1 }'`
+                    collection_dir=$(dirname $container_dir)
+                    container_tag=$(basename $container_dir)
+                    mv ${recipe}.sif ${container_dir}/${container_name}.sif
+                    # Create artifact storage that mirrors registry organization
+                    outdir=build/"${container_dir/${HOME}\/repo/}"
+                    outdir="${outdir/manifests\//}"  # vanessa/greeting/latest
+                    mkdir -p $outdir
+
+                    echo
+                    echo "Successfully built ${recipe}"
+                    echo "   saving to -> $outdir"
+                    echo "   sha256sum -> $container_name"
+                    echo "   tag       -> $container_tag"
+ 
+                    mv "${container_dir}/${container_name}.sif" $outdir
+                    container_size=`du -k "${outdir}/${container_name}.sif" | cut -f1`
+                    echo "   size       -> $container_size"
+
+                    digest=${container_name}
+                    url=${artifacts}/$CIRCLE_NODE_INDEX/singularity-containers/$outdir/${container_name}.sif
+                    # Create the README.md with the MANIFEST template
+                    export url digest container_size
+                    envsubst < ~/repo/.circleci/MANIFEST_TEMPLATE.md > $container_dir/README.md
+                    # Add README for container to git (will render into container page)
+                    git add $container_dir/README.md
+                    ls $container_dir
+                    cat $container_dir/README.md
+                    # Create the tags folder, if doesn't exist
+                    if [ ! -f "$collection_dir/README.md" ]; then
+                        echo "Creating $collection_dir for tags"
+                        mkdir -p $collection_dir
+                        cp ~/repo/.circleci/TAGS_TEMPLATE.md $collection_dir/README.md
+                        # Add README for tags to git (will render into tags endpoint)
+                        git add $collection_dir/README.md
+                    fi
+
+                done
+
+              # build the container!
+              # You can add any other sregistry push commands for storage, and specify a client
+              # (and make sure your define the encrypted environment credentials in circle ci
+              # to push to your storage locations of choice
+
+              # Examples with upload to storage clients defined by sregistry
+              # https://singularityhub.github.io/sregistry-cli/clients
+              # Environment variables must be defined in CI encrypted secrets/settings
+              # https://circleci.com/docs/2.0/env-vars/
+              #- /bin/bash build.sh --uri collection/container --cli google-storage Singularity
+              #- /bin/bash build.sh --uri collection/container --cli google-drive Singularity
+              #- /bin/bash build.sh --uri collection/container --cli globus Singularity
+              #- /bin/bash build.sh --uri collection/container --cli registry Singularity
+
+      - run:
+          name: Update if branch is master
+          command: |
+             if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                 echo "Detected push to master, updating GitHub pages!"    
+                 git config user.name "${CIRCLE_USERNAME}"
+                 git config user.email "${CIRCLE_USERNAME}@users.noreply.github.com"
+                 git pull origin master
+                 git commit -m 'Automated deployment to Github Pages' --allow-empty
+                 git push origin master
+             fi
+
+      - store_artifacts:
+          path: ~/repo/build
+          destination: singularity-containers
