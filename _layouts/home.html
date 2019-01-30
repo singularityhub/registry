@@ -19,7 +19,7 @@ layout: default
                     <div class="col-md-9">
 
 <!-- Variable Assignments -->
-{% assign namespaces = "" %}{% for item in site.pages %}{% if item.path contains "tags/README.md" %}{% assign namespace = item.path | remove: "/tags/README.md" %}{% assign namespaces = namespaces | append: namespace | append: "," %}{% endif %}{% endfor %}{% assign namespaces = namespaces | append: "-@" | remove: ",-@" %}{% assign namespace_list = namespaces | split: ", " %}
+{% assign namespaces = "" %}{% for item in site.pages %}{% if item.path contains "tags/README.md" %}{% assign namespace = item.path | remove: "/tags/README.md" %}{% assign namespaces = namespaces | append: namespace | append: "," %}{% endif %}{% endfor %}{% assign namespaces = namespaces | append: "-@" | remove: ",-@" %}{% assign namespace_list = namespaces | split: "," %}
 
         <div class="card material-table mdl-data-table--selectable">
             <div class="table-header" style="width:100%">
