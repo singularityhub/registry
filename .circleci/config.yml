@@ -70,6 +70,7 @@ jobs:
                     # Rename image based on shasum
                     container_name=`sha256sum ${recipe}.sif | awk '{ print $1 }'`
                     collection_dir=$(dirname $container_dir)
+                    collection_dir=$(dirname $collection_dir)
                     container_tag=$(basename $container_dir)
                     mv ${recipe}.sif ${container_dir}/${container_name}.sif
                     # Create artifact storage that mirrors registry organization
