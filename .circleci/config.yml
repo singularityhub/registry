@@ -46,19 +46,18 @@ jobs:
             repo_id=$(curl https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} | jq --raw-output '.id')
             echo "Repo ID is ${repo_id}"
             artifacts="https://${CIRCLE_BUILD_NUM}-${repo_id}-gh.circle-artifacts.com"
-            # Here is a list of commits, compared to master
-            commits=$(git log --format=%H origin/master..origin/${CIRCLE_BRANCH})
-            changed=$(tempfile) 
-            for commit in $commits
-                do
-                    git diff --name-only master $commit >> ${changed}
-            done
-            changed_recipes=$(cat $changed | grep Singularity | sort | uniq)
-            # 1. Find changed files between branch and master
-            for recipe in ${changed_recipes}
+            # Find all singularity recipes
+            for recipe in $(find $PWD -name "Singularity*")
                 do  
-                    echo "Found changed recipe $recipe"
                     container_dir=$(dirname ${recipe}.sif)
+
+                    # Only build the container if we don't have a README.md for it                    
+                    if [ -f "$container_dir/README.md" ]; then
+                        echo "$container_dir/README.md found, $recipe not marked for build."
+                        continue
+                    fi
+
+                    echo "Found changed recipe $recipe"
                     # If the user provided a build script, run it instead
                     if [ -f "${container_dir}/build.sh" ]; then
                         echo "Found ${container_dir}/build.sh"
@@ -121,10 +120,22 @@ jobs:
               #- /bin/bash build.sh --uri collection/container --cli globus Singularity
               #- /bin/bash build.sh --uri collection/container --cli registry Singularity
 
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - repo
+
+
+  deploy:
+    machine: true
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: ~/
       - run:
-          name: Update if branch is master
+          name: Update if branch is not master
           command: |
-             if [ "${CIRCLE_BRANCH}" == "master" ]; then
+             if [ "${CIRCLE_BRANCH}" != "master" ]; then
                  echo "Detected push to master, updating GitHub pages!"    
                  git config user.name "${CIRCLE_USERNAME}"
                  git config user.email "${CIRCLE_USERNAME}@users.noreply.github.com"
@@ -136,3 +147,17 @@ jobs:
       - store_artifacts:
           path: ~/repo/build
           destination: singularity-containers
+
+
+workflows:
+  version: 2
+  build_deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: master
+      - hold:
+          type: approval
+          requires: 
+            - build
