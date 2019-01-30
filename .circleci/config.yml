@@ -42,11 +42,6 @@ jobs:
           command: |
             cd ~/repo
             mkdir -p build
-            # 0. Keep lists of tags, hashes, and storage paths
-            tags=""
-            digests=""
-            paths=""
-            urls=""
             # The repository ID is in the inspect / metadata
             # <meta name="octolytics-dimension-repository_id" content="167740989" />
             # repo_id=167740989
@@ -84,15 +79,13 @@ jobs:
                     echo "   tag       -> $container_tag"
  
                     mv "${container_dir}/${container_name}.sif" $outdir
-                    tags="${tags}${container_tag} "
+                    container_size=($(ls -s ${outdir}/${container_name}.sif))
+                    echo "   size       -> $container_size"
+
                     digest=${container_name}
-                    digests="${digests}sha256:${container_name} "
-                    paths="$paths${outdir}/${container_name}.sif "
                     url=${artifacts}/$CIRCLE_NODE_INDEX/singularity-containers/$outdir/${container_name}.sif
-                    urls="$urls$url "
-                    size=($(ls -s ${outdir}/${container_name}.sif))
                     # Create the README.md with the MANIFEST template
-                    export url digest size
+                    export url digest container_size
                     envsubst < ~/repo/.circleci/MANIFEST_TEMPLATE.md > $container_dir/README.md
                     # Add README for container to git (will render into container page)
                     git add $container_dir/README.md
@@ -122,12 +115,6 @@ jobs:
               #- /bin/bash build.sh --uri collection/container --cli google-drive Singularity
               #- /bin/bash build.sh --uri collection/container --cli globus Singularity
               #- /bin/bash build.sh --uri collection/container --cli registry Singularity
-
-             
-            echo $tags
-            echo $digests
-            echo $paths
-            echo $urls
 
       - run:
           name: Update if branch is master
