@@ -34,7 +34,6 @@ jobs:
       - save_cache:
           paths:
             - /home/circleci/conda
-            - /usr/local
           key: v2-dependencies
         
       - run:
