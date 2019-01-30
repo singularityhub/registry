@@ -1,0 +1,11 @@
+Bootstrap: docker
+From: ubuntu:16.04
+
+# sudo singularity build lolcow.sif Singularity
+
+%post
+
+    # Install lolcat, cowsay, fortune
+    apt-get update && apt-get install -y fortune cowsay lolcat
+    sed -i '2iexport LC_ALL=C;' /.singularity.d/actions/shell
+    sed -i '3i/usr/games/fortune | /usr/games/cowsay | /usr/games/lolcat;' /.singularity.d/actions/shell
