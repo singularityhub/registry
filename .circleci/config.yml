@@ -88,7 +88,7 @@ jobs:
                     echo "   size       -> $container_size"
 
                     digest=${container_name}
-                    url=${artifacts}/$CIRCLE_NODE_INDEX/singularity-containers/$outdir/${container_name}.sif
+                    url=${artifacts}/$CIRCLE_NODE_INDEX/singularity-containers$outdir/${container_name}.sif
                     # Create the README.md with the MANIFEST template
                     export url digest container_size
                     envsubst < ~/repo/.circleci/MANIFEST_TEMPLATE.md > $container_dir/README.md
