@@ -50,7 +50,7 @@ jobs:
             # The repository ID is in the inspect / metadata
             # <meta name="octolytics-dimension-repository_id" content="167740989" />
             # repo_id=167740989
-            repo_id=$(curl https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME} | jq --raw-output '.id')
+            repo_id=$(curl https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} | jq --raw-output '.id')
             echo "Repo ID is ${repo_id}"
             artifacts="https://${CIRCLE_BUILD_NUM}-${repo_id}-gh.circle-artifacts.com"
             # Here is a list of commits, compared to master
@@ -69,6 +69,7 @@ jobs:
                     # Rename image based on shasum
                     container_name=`sha256sum ${recipe}.sif | awk '{ print $1 }'`
                     container_dir=$(dirname ${recipe}.sif)
+                    collection_dir=$(dirname $container_dir)
                     container_tag=$(basename $container_dir)
                     mv ${recipe}.sif ${container_dir}/${container_name}.sif
                     # Create artifact storage that mirrors registry organization
@@ -84,10 +85,24 @@ jobs:
  
                     mv "${container_dir}/${container_name}.sif" $outdir
                     tags="${tags}${container_tag} "
+                    digest=${container_name}
                     digests="${digests}sha256:${container_name} "
                     paths="$paths${outdir}/${container_name}.sif "
                     url=${artifacts}/$CIRCLE_NODE_INDEX/singularity-containers/$outdir/$container_name.sif
                     urls="$urls$url "
+                    size=
+                    # Create the README.md with the MANIFEST template
+                    export url digest size
+                    envsubst < ~/repo/.circleci/MANIFEST_TEMPLATE.md > $container_dir/README.md
+                    ls $container_dir
+                    cat $container_dir/README.md
+                    # Create the tags folder, if doesn't exist
+                    if [ ! -f "$collection_dir/README.md" ]; then
+                        echo "Creating $collection_dir for tags"
+                        mkdir -p $collection_dir
+                        cp ~/repo/.circleci/TAG_TEMPLATE.md $collection_dir/README.md
+                    fi
+
                 done
              
             echo $tags
