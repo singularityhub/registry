@@ -46,6 +46,7 @@ jobs:
             # <meta name="octolytics-dimension-repository_id" content="167740989" />
             # repo_id=167740989
             repo_id=$(curl https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME} | jq --raw-output '.id')
+            echo "Repo ID is ${repo_id}"
             artifacts="https://${CIRCLE_BUILD_NUM}-${repo_id}-gh.circle-artifacts.com"
             # Here is a list of commits, compared to master
             commits=$(git log --format=%H origin/master..origin/${CIRCLE_BRANCH})
