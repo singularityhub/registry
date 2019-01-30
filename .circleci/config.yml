@@ -162,5 +162,6 @@ workflows:
       - deploy:
           requires: 
             - hold
+          filters:
             branches:
               ignore: master
