@@ -58,10 +58,17 @@ jobs:
             for recipe in ${changed_recipes}
                 do  
                     echo "Found changed recipe $recipe"
-                    /bin/bash ~/repo/.circleci/build.sh $recipe
+                    container_dir=$(dirname ${recipe}.sif)
+                    # If the user provided a build script, run it instead
+                    if [ -f "${container_dir}/build.sh" ]; then
+                        echo "Found ${container_dir}/build.sh"
+                        chmod u+x ${container_dir}/build.sh
+                        /bin/bash ${container_dir}/build.sh $recipe
+                    else
+                        /bin/bash ~/repo/.circleci/build.sh $recipe
+                    fi
                     # Rename image based on shasum
                     container_name=`sha256sum ${recipe}.sif | awk '{ print $1 }'`
-                    container_dir=$(dirname ${recipe}.sif)
                     collection_dir=$(dirname $container_dir)
                     container_tag=$(basename $container_dir)
                     mv ${recipe}.sif ${container_dir}/${container_name}.sif
