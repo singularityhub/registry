@@ -55,6 +55,7 @@ jobs:
             done
             changed_recipes=$(cat $changed | grep Singularity | sort | uniq)
             # 1. Find changed files between branch and master
+            if [ -z "$changed_recipes" ]; then exit 0; fi
             for recipe in ${changed_recipes}
                 do  
                     echo "Found changed recipe $recipe"
