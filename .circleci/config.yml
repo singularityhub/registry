@@ -32,7 +32,7 @@ jobs:
           key: v1-dependencies
         
       - run:
-          name: build container
+          name: Build Containers
           command: |
             cd ~/repo
             mkdir -p build
@@ -40,6 +40,11 @@ jobs:
             tags=""
             digests=""
             paths=""
+            urls=""
+            # The repository ID is in the inspect / metadata
+            # <meta name="octolytics-dimension-repository_id" content="167740989" />
+            repo_id=167740989
+            artifacts="https://${CIRCLE_BUILD_NUM}-${REPO_ID}-gh.circle-artifacts.com"
             # Here is a list of commits, compared to master
             commits=$(git log --format=%H origin/master..origin/${CIRCLE_BRANCH})
             changed=$(tempfile) 
@@ -58,7 +63,6 @@ jobs:
                     container_dir=$(dirname ${recipe}.sif)
                     container_tag=$(basename $container_dir)
                     mv ${recipe}.sif ${container_dir}/${container_name}.sif
-
                     # Create artifact storage that mirrors registry organization
                     outdir=build/"${container_dir/${HOME}\/repo/}"
                     outdir="${outdir/manifests\//}"  # vanessa/greeting/latest
@@ -73,13 +77,15 @@ jobs:
                     mv "${container_dir}/${container_name}.sif" $outdir
                     tags="${tags}${container_tag} "
                     digests="${digests}sha256:${container_name} "
-                    paths="$paths${outdir}/${container_name}.sif"
-                    
+                    paths="$paths${outdir}/${container_name}.sif "
+                    url=${artifacts}/$CIRCLE_NODE_INDEX/singularity-containers/$outdir/$container_name.sif
+                    urls="$urls$url "
                 done
              
             echo $tags
             echo $digests
             echo $paths
+            echo $urls
 
       # build the container!
       # You can add any other sregistry push commands here, and specify a client
