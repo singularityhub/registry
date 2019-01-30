@@ -97,8 +97,15 @@ jobs:
                     echo $container_dir/README.md >> .gitadds
                     ls $container_dir
                     cat $container_dir/README.md
-                    # Create the tags folder, if doesn't exist
+                    # Create the collections README, if it doesn't exist
                     if [ ! -f "$collection_dir/README.md" ]; then
+                        echo "Creating $collection_dir/README.md"
+                        cp ~/repo/.circleci/COLLECTION_TEMPLATE.md $collection_dir/README.md
+                        # Add README for tags to git (will render into tags endpoint)
+                        echo $collection_dir/README.md >> .gitadds
+                    fi
+                    # Create the tags folder, if doesn't exist
+                    if [ ! -f "$collection_dir/tags/README.md" ]; then
                         echo "Creating $collection_dir for tags"
                         mkdir -p $collection_dir/tags
                         cp ~/repo/.circleci/TAGS_TEMPLATE.md $collection_dir/tags/README.md
