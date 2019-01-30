@@ -19,6 +19,7 @@ jobs:
           name: install dependencies
           command: |
             wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+            apt-get update && apt-get install -y jq
             /bin/bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/conda
             export PATH=$HOME/conda/bin:$PATH
             $HOME/conda/bin/pip install sregistry[all]
@@ -43,8 +44,9 @@ jobs:
             urls=""
             # The repository ID is in the inspect / metadata
             # <meta name="octolytics-dimension-repository_id" content="167740989" />
-            repo_id=167740989
-            artifacts="https://${CIRCLE_BUILD_NUM}-${REPO_ID}-gh.circle-artifacts.com"
+            # repo_id=167740989
+            repo_id=$(curl https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME} | jq --raw-output '.id')
+            artifacts="https://${CIRCLE_BUILD_NUM}-${repo_id}-gh.circle-artifacts.com"
             # Here is a list of commits, compared to master
             commits=$(git log --format=%H origin/master..origin/${CIRCLE_BRANCH})
             changed=$(tempfile) 
