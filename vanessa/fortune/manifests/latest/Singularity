@@ -1,0 +1,14 @@
+Bootstrap: docker
+From: ubuntu:16.04
+
+# sudo singularity build fortune.sif Singularity
+
+%runscript
+    exec /usr/games/fortune
+
+%post
+
+    # Install figlet!
+    apt-get update && apt-get install -y fortune
+    sed -i '2i/usr/games/fortune;' /.singularity.d/actions/shell
+
