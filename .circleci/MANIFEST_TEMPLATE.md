@@ -1,9 +1,9 @@
 ---
 layout: manifests/singularity
-size: $size
+size: $container_size
 digest: sha256:$digest
 layers:
-- size: $size
+- size: $container_size
   digest: "sha256:$digest"
   url: "$url"
 ---
