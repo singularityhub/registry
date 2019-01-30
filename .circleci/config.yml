@@ -79,12 +79,12 @@ jobs:
 
                     echo
                     echo "Successfully built ${recipe}"
-                    echo "   saving to -> $outdir"
+                    echo "   saving to -> build$outdir"
                     echo "   sha256sum -> $container_name"
                     echo "   tag       -> $container_tag"
  
+                    container_size=`du -k "${container_dir}/${container_name}.sif" | cut -f1`
                     mv "${container_dir}/${container_name}.sif" build/$outdir
-                    container_size=`du -k "bulid/${outdir}/${container_name}.sif" | cut -f1`
                     echo "   size       -> $container_size"
 
                     digest=${container_name}
