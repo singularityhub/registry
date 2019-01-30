@@ -13,7 +13,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v4-dependencies
+          - v5-dependencies
 
       - run:
           name: install dependencies
@@ -29,19 +29,11 @@ jobs:
             fi
             chmod u+x ~/repo/.circleci/*.sh
             /bin/bash ~/repo/.circleci/setup.sh
-            for path in var/singularity bin/singularity libexec/singularity etc/singularity
-                sudo mkdir -p /usr/local/$path
-                chmod -R 777 /usr/local/$path
-            done
 
       - save_cache:
           paths:
             - /home/circleci/conda
-            - /usr/local/var/singularity
-            - /usr/local/bin/singularity
-            - /usr/local/libexec/singularity
-            - /usr/local/etc/singularity
-          key: v4-dependencies
+          key: v5-dependencies
         
       - run:
           name: Build Containers
