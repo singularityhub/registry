@@ -135,14 +135,12 @@ jobs:
       - run:
           name: Update if branch is not master
           command: |
-             if [ "${CIRCLE_BRANCH}" != "master" ]; then
-                 echo "Detected push to master, updating GitHub pages!"    
-                 git config user.name "${CIRCLE_USERNAME}"
-                 git config user.email "${CIRCLE_USERNAME}@users.noreply.github.com"
-                 git pull origin master
-                 git commit -m 'Automated deployment to Github Pages' --allow-empty
-                 git push origin master
-             fi
+             echo "Detected push to master, updating GitHub pages!"    
+             git config user.name "${CIRCLE_USERNAME}"
+             git config user.email "${CIRCLE_USERNAME}@users.noreply.github.com"
+             git pull origin master
+             git commit -m 'Automated deployment to Github Pages' --allow-empty
+             git push origin master
 
       - store_artifacts:
           path: ~/repo/build
@@ -161,3 +159,8 @@ workflows:
           type: approval
           requires: 
             - build
+      - deploy:
+          requires: 
+            - hold
+            branches:
+              ignore: master
