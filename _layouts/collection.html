@@ -5,7 +5,8 @@ layout: default
 <!-- Variable Assignments -->
 {% assign collection_name = page.dir | remove_first: '/' | append: '@' | remove: '/@' %}
 {% assign manifests = collection_name | append: "/manifests" %}
-{% assign tags = "" %}{% for item in site.pages %}{% if item.path contains manifests %}{% assign tag_name = item.path | remove_first: collection_name | remove_first: "/manifests/" | remove: "/README.md" %}{% assign tags = tags | append: tag_name | append: "," %}{% endif %}{% endfor %}{% assign tags = tags | append: "-@" | remove: ",-@" %}{% assign taglist = tags | split: ", " %}
+{% assign tags = "" %}{% for item in site.pages %}{% if item.path contains manifests %}
+{% assign tag_name = item.path | remove_first: collection_name | remove_first: "/manifests/" | remove: "/README.md" %}{% assign tags = tags | append: tag_name | append: "," %}{% endif %}{% endfor %}{% assign tags = tags | append: "-@" | remove: ",-@" %}{% assign taglist = tags | split: "," %}
 
 
 <div class="row" style="margin-top:30px">
@@ -79,8 +80,7 @@ layout: default
 
                            <tbody>
                            
-                           {% for tag in taglist %}<tr>
-
+                           {% for tag in taglist %}{% if tag != "README.md" %}<tr>
                                {% comment %}
                                Each tag has an associated README.md with metadata about layers, etc., so we find it here. At
                                the end of this loop below, the page is assigned to the tag_page variable.
@@ -97,7 +97,8 @@ layout: default
                                    <button class="btn btn-success btn-sm" style="margin-top:20px">DOWNLOAD</button></a></td>
                                <td>{{ tag }}</td>
                                <td>{{ tag_page.size }} KB</td>
-                           </tr>{% endfor %}
+                           </tr>
+                           {% endif %}{% endfor %}
                        </tbody>
                    </table>
          </div>
