@@ -13,7 +13,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v2-dependencies
+          - v3-dependencies
 
       - run:
           name: install dependencies
@@ -34,7 +34,7 @@ jobs:
       - save_cache:
           paths:
             - /home/circleci/conda
-          key: v2-dependencies
+          key: v3-dependencies
         
       - run:
           name: Build Containers
