@@ -72,9 +72,9 @@ jobs:
                     container_tag=$(basename $container_dir)
                     mv ${recipe}.sif ${container_dir}/${container_name}.sif
                     # Create artifact storage that mirrors registry organization
-                    outdir=build/"${container_dir/${HOME}\/repo/}"
-                    outdir="${outdir/manifests\//}"  # vanessa/greeting/latest
-                    mkdir -p $outdir
+                    outdir="${container_dir/${HOME}\/repo/}" # vanessa/greeting/
+                    outdir="${outdir/manifests\//}"          # vanessa/greeting/latest
+                    mkdir -p build/$outdir
 
                     echo
                     echo "Successfully built ${recipe}"
@@ -82,8 +82,8 @@ jobs:
                     echo "   sha256sum -> $container_name"
                     echo "   tag       -> $container_tag"
  
-                    mv "${container_dir}/${container_name}.sif" $outdir
-                    container_size=`du -k "${outdir}/${container_name}.sif" | cut -f1`
+                    mv "${container_dir}/${container_name}.sif" build/$outdir
+                    container_size=`du -k "bulid/${outdir}/${container_name}.sif" | cut -f1`
                     echo "   size       -> $container_size"
 
                     digest=${container_name}
