@@ -121,8 +121,20 @@ jobs:
               #- /bin/bash build.sh --uri collection/container --cli globus Singularity
               #- /bin/bash build.sh --uri collection/container --cli registry Singularity
 
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - repo
+
+
+  deploy:
+    machine: true
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: ~/
       - run:
-          name: Update if branch is master
+          name: Update if branch is not master
           command: |
              if [ "${CIRCLE_BRANCH}" != "master" ]; then
                  echo "Detected push to master, updating GitHub pages!"    
@@ -136,3 +148,17 @@ jobs:
       - store_artifacts:
           path: ~/repo/build
           destination: singularity-containers
+
+
+workflows:
+  version: 2
+  build_deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: master
+      - hold:
+          type: approval
+          requires: 
+            - build
