@@ -29,6 +29,10 @@ jobs:
             fi
             chmod u+x ~/repo/.circleci/*.sh
             /bin/bash ~/repo/.circleci/setup.sh
+            for path in var/singularity bin/singularity libexec/singularity etc/singularity
+                sudo mkdir -p /usr/local/$path
+                chmod -R 777 /usr/local/$path
+            done
 
       - save_cache:
           paths:
