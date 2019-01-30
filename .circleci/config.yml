@@ -46,20 +46,18 @@ jobs:
             repo_id=$(curl https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} | jq --raw-output '.id')
             echo "Repo ID is ${repo_id}"
             artifacts="https://${CIRCLE_BUILD_NUM}-${repo_id}-gh.circle-artifacts.com"
-            # Here is a list of commits, compared to master
-            commits=$(git log --format=%H origin/master..origin/${CIRCLE_BRANCH})
-            changed=$(tempfile) 
-            for commit in $commits
-                do
-                    git diff --name-only master $commit >> ${changed}
-            done
-            changed_recipes=$(cat $changed | grep Singularity | sort | uniq)
-            # 1. Find changed files between branch and master
-            if [ -z "$changed_recipes" ]; then exit 0; fi
-            for recipe in ${changed_recipes}
+            # Find all singularity recipes
+            for recipe in $(find $PWD -name "Singularity*")
                 do  
-                    echo "Found changed recipe $recipe"
                     container_dir=$(dirname ${recipe}.sif)
+
+                    # Only build the container if we don't have a README.md for it                    
+                    if [ -f "$container_dir/README.md" ]; then
+                        echo "$container_dir/README.md found, $recipe not marked for build."
+                        continue
+                    fi
+
+                    echo "Found changed recipe $recipe"
                     # If the user provided a build script, run it instead
                     if [ -f "${container_dir}/build.sh" ]; then
                         echo "Found ${container_dir}/build.sh"
