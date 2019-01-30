@@ -88,9 +88,9 @@ jobs:
                     digest=${container_name}
                     digests="${digests}sha256:${container_name} "
                     paths="$paths${outdir}/${container_name}.sif "
-                    url=${artifacts}/$CIRCLE_NODE_INDEX/singularity-containers/$outdir/$container_name.sif
+                    url=${artifacts}/$CIRCLE_NODE_INDEX/singularity-containers/$outdir/${container_name}.sif
                     urls="$urls$url "
-                    size=
+                    size=($(ls -s ${outdir}/${container_name}.sif))
                     # Create the README.md with the MANIFEST template
                     export url digest size
                     envsubst < ~/repo/.circleci/MANIFEST_TEMPLATE.md > $container_dir/README.md
