@@ -19,7 +19,7 @@ jobs:
           name: install dependencies
           command: | 
             ls $HOME
-            if [ ! -d "${HOME}/conda" ]; then
+            if [ ! -d "/home/circleci/conda" ]; then
                 wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
                 sudo apt-get update && sudo apt-get install -y jq
                 /bin/bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/conda
@@ -33,7 +33,7 @@ jobs:
 
       - save_cache:
           paths:
-            - $HOME/conda
+            - /home/circleci/conda
             - /usr/local
           key: v1-dependencies
         
