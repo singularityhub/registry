@@ -17,10 +17,11 @@ jobs:
 
       - run:
           name: install dependencies
-          command: |
+          command: | 
+            ls $HOME
             if [ ! -d "${HOME}/conda" ]; then
                 wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-                apt-get update && apt-get install -y jq
+                sudo apt-get update && sudo apt-get install -y jq
                 /bin/bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/conda
                 export PATH=$HOME/conda/bin:$PATH
                 $HOME/conda/bin/pip install sregistry[all]
