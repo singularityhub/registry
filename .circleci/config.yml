@@ -100,7 +100,7 @@ jobs:
                     if [ ! -f "$collection_dir/README.md" ]; then
                         echo "Creating $collection_dir for tags"
                         mkdir -p $collection_dir
-                        cp ~/repo/.circleci/TAG_TEMPLATE.md $collection_dir/README.md
+                        cp ~/repo/.circleci/TAGS_TEMPLATE.md $collection_dir/README.md
                     fi
 
                 done
