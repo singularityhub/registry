@@ -35,20 +35,18 @@ if [ $? -eq 0 ]; then
 
 else
 
-    sudo apt-get install -y  build-essential \
-                             squashfs-tools \
-                             libtool \
-                             uuid-dev \
-                             libssl-dev \
-                             libgpgme11-dev \
-                             libseccomp-dev \
-                             pkg-config
+    sudo apt-get install -y build-essential \
+                            squashfs-tools \
+                            libtool \
+                            uuid-dev \
+                            libssl-dev \
+                            libgpgme11-dev \
+                            libseccomp-dev \
+                            pkg-config
 
-    if [ ! -f "go/api/README" ]
-        then
-        wget https://dl.google.com/go/go${GO_VERSION}.src.tar.gz && \
-        tar -C /usr/local -xzf go${GO_VERSION}.src.tar.gz 
-    fi
+    # Install GoLang 
+    wget https://dl.google.com/go/go${GO_VERSION}.src.tar.gz && \
+    tar -C /usr/local -xzf go${GO_VERSION}.src.tar.gz 
 
     export PATH=$PATH:/usr/local/go/bin && \
         sudo mkdir -p /go && \
