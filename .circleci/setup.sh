@@ -28,26 +28,36 @@ echo "sregistry Version: ${sregistry_version}"
 
 # Install GoLang
 
-ls
-if [ ! -f "go/api/README" ]
-    then
+# Check if it's already installed
+which singularity &> /dev/null
+
+if [ $? -eq 0 ]; then
+    echo "Singularity is installed."
+    export GOPATH=/go
+    export PATH=$PATH:/usr/local/go/bin
+
+else
+
+    if [ ! -f "go/api/README" ]
+        then
         wget https://dl.google.com/go/go${GO_VERSION}.src.tar.gz && \
-        tar -C /usr/local --keep-old-files -xzf go${GO_VERSION}.src.tar.gz
+        tar -C /usr/local -xzf go${GO_VERSION}.src.tar.gz 
+    fi
+
+    export PATH=$PATH:/usr/local/go/bin && \
+        sudo mkdir -p /go && \
+        sudo chmod -R 7777 /go
+
+    # Install Singularity
+
+    export GOPATH=/go && \
+        go get -u github.com/golang/dep/cmd/dep && \
+        mkdir -p ${GOPATH}/src/github.com/sylabs && \
+        cd ${GOPATH}/src/github.com/sylabs && \
+        wget https://github.com/sylabs/singularity/releases/download/v${singularity_version}/singularity-${singularity_version}.tar.gz && \
+        tar -xzvf singularity-${singularity_version}.tar.gz && \
+        cd singularity && \
+        ./mconfig -p /usr/local && \
+        make -C builddir && \
+        sudo make -C builddir install
 fi
-
-export PATH=$PATH:/usr/local/go/bin && \
-    sudo mkdir -p /go && \
-    sudo chmod -R 7777 /go
-
-# Install Singularity
-
-export GOPATH=/go && \
-    go get -u github.com/golang/dep/cmd/dep && \
-    mkdir -p ${GOPATH}/src/github.com/sylabs && \
-    cd ${GOPATH}/src/github.com/sylabs && \
-    wget https://github.com/sylabs/singularity/releases/download/v${singularity_version}/singularity-${singularity_version}.tar.gz && \
-    tar -xzvf singularity-${singularity_version}.tar.gz && \
-    cd singularity && \
-    ./mconfig -p /usr/local && \
-    make -C builddir && \
-    sudo make -C builddir install

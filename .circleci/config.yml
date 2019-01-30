@@ -28,6 +28,7 @@ jobs:
       - save_cache:
           paths:
             - $HOME/conda
+            - /usr/local
           key: v1-dependencies
         
       - run:
@@ -39,9 +40,16 @@ jobs:
             tags=""
             digests=""
             paths=""
+            # Here is a list of commits, compared to master
+            commits=$(git log --format=%H origin/master..origin/${CIRCLE_BRANCH})
+            changed=$(tempfile) 
+            for commit in $commits
+                do
+                    git diff --name-only master $commit >> ${changed}
+            done
+            changed_recipes=$(cat $changed | grep Singularity | sort | uniq)
             # 1. Find changed files between branch and master
-            changed_recipes=$(git diff --name-only master | grep Singularity)
-            for recipe in $changed_recipes
+            for recipe in ${changed_recipes}
                 do  
                     echo "Found changed recipe $recipe"
                     /bin/bash ~/repo/.circleci/build.sh $recipe
@@ -52,12 +60,13 @@ jobs:
                     mv ${recipe}.sif ${container_dir}/${container_name}.sif
 
                     # Create artifact storage that mirrors registry organization
-                    outdir=build"${container_dir/${HOME}\/repo/}"
+                    outdir=build/"${container_dir/${HOME}\/repo/}"
                     outdir="${outdir/manifests\//}"  # vanessa/greeting/latest
                     mkdir -p $outdir
 
+                    echo
                     echo "Successfully built ${recipe}"
-                    echo "Saving to $outdir"
+                    echo "   saving to -> $outdir"
                     echo "   sha256sum -> $container_name"
                     echo "   tag       -> $container_tag"
  
@@ -68,6 +77,10 @@ jobs:
                     
                 done
              
+            echo $tags
+            echo $digests
+            echo $paths
+
       # build the container!
       # You can add any other sregistry push commands here, and specify a client
       # (and make sure your define the encrypted environment credentials in circle ci
