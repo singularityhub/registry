@@ -45,7 +45,8 @@ jobs:
             # repo_id=167740989
             repo_id=$(curl https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME} | jq --raw-output '.id')
             echo "Repo ID is ${repo_id}"
-            artifacts="https://${CIRCLE_BUILD_NUM}-${repo_id}-gh.circle-artifacts.com"
+            build_number=$((CIRCLE_BUILD_NUM+1))
+            artifacts="https://${build_number}-${repo_id}-gh.circle-artifacts.com"
             # Find all singularity recipes
             for recipe in $(find $PWD -name "Singularity*")
                 do  
