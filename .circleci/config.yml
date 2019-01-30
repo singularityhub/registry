@@ -18,11 +18,15 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-            apt-get update && apt-get install -y jq
-            /bin/bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/conda
-            export PATH=$HOME/conda/bin:$PATH
-            $HOME/conda/bin/pip install sregistry[all]
+            if [ ! -d "${HOME}/conda" ]; then
+                wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+                apt-get update && apt-get install -y jq
+                /bin/bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/conda
+                export PATH=$HOME/conda/bin:$PATH
+                $HOME/conda/bin/pip install sregistry[all]
+            else
+                echo "Miniconda is already installed, continuing to build."
+            fi
             chmod u+x ~/repo/.circleci/*.sh
             /bin/bash ~/repo/.circleci/setup.sh
 
