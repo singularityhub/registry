@@ -124,7 +124,7 @@ jobs:
       - run:
           name: Update if branch is master
           command: |
-             if [ "${CIRCLE_BRANCH}" == "master" ]; then
+             if [ "${CIRCLE_BRANCH}" != "master" ]; then
                  echo "Detected push to master, updating GitHub pages!"    
                  git config user.name "${CIRCLE_USERNAME}"
                  git config user.email "${CIRCLE_USERNAME}@users.noreply.github.com"
