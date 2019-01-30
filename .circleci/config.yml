@@ -13,7 +13,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v3-dependencies
+          - v4-dependencies
 
       - run:
           name: install dependencies
@@ -21,7 +21,6 @@ jobs:
             ls $HOME
             if [ ! -d "/home/circleci/conda" ]; then
                 wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-                sudo apt-get update && sudo apt-get install -y jq
                 /bin/bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/conda
                 export PATH=$HOME/conda/bin:$PATH
                 $HOME/conda/bin/pip install sregistry[all]
@@ -34,7 +33,11 @@ jobs:
       - save_cache:
           paths:
             - /home/circleci/conda
-          key: v3-dependencies
+            - /usr/local/var/singularity
+            - /usr/local/bin/singularity
+            - /usr/local/libexec/singularity
+            - /usr/local/etc/singularity
+          key: v4-dependencies
         
       - run:
           name: Build Containers

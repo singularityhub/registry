@@ -4,31 +4,28 @@ singularity_version="${singularity_version:-3.0.2}"
 GO_VERSION=1.11.5
 
 sudo apt-get update && \
-     sudo apt-get install -y wget \
-                             git \
-                             build-essential \
-                             squashfs-tools \
-                             libtool \
-                             uuid-dev \
-                             libssl-dev \
-                             libgpgme11-dev \
-                             libseccomp-dev \
-                             pkg-config
-
+     sudo apt-get install -y wget git jq 
 
 sudo sed -i -e 's/^Defaults\tsecure_path.*$//' /etc/sudoers
 
-# Check Python
 
-echo "Python Version:"
-python --version
-pip install sregistry[all]
-sregistry_version=$(sregistry version)
-echo "sregistry Version: ${sregistry_version}"
+# sregistry ####################################################################
 
-# Install GoLang
+which sregistry &> /dev/null
 
-# Check if it's already installed
+if [ $? -eq 0 ]; then
+    echo "sregistry is installed."
+else
+    echo "Python Version:"
+    python --version
+    pip install sregistry[all]
+    sregistry_version=$(sregistry version)
+    echo "sregistry Version: ${sregistry_version}"
+fi
+
+
+# singularity ##################################################################
+
 which singularity &> /dev/null
 
 if [ $? -eq 0 ]; then
@@ -37,6 +34,15 @@ if [ $? -eq 0 ]; then
     export PATH=$PATH:/usr/local/go/bin
 
 else
+
+    sudo apt-get install -y  build-essential \
+                             squashfs-tools \
+                             libtool \
+                             uuid-dev \
+                             libssl-dev \
+                             libgpgme11-dev \
+                             libseccomp-dev \
+                             pkg-config
 
     if [ ! -f "go/api/README" ]
         then
@@ -47,8 +53,6 @@ else
     export PATH=$PATH:/usr/local/go/bin && \
         sudo mkdir -p /go && \
         sudo chmod -R 7777 /go
-
-    # Install Singularity
 
     export GOPATH=/go && \
         go get -u github.com/golang/dep/cmd/dep && \
